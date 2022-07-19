@@ -1,0 +1,71 @@
+/**************************************************************************
+ OmegaT - Computer Assisted Translation (CAT) tool 
+          with fuzzy matching, translation memory, keyword search, 
+          glossaries, and translation leveraging into updated projects.
+
+ Copyright (C) 2022 Thomas Cordonnier
+               Home page: http://www.omegat.org/
+               Support center: http://groups.yahoo.com/group/OmegaT/
+
+ This file is part of OmegaT.
+
+ OmegaT is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ OmegaT is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **************************************************************************/
+
+package org.omegat.gui.comments;
+
+import org.omegat.core.data.SourceTextEntry;
+import org.omegat.core.data.ProjectProperties;
+import org.omegat.core.events.IProjectEventListener;
+import org.omegat.core.CoreEvents;
+import org.omegat.core.Core;
+
+/**
+ * Prototype ICommentProvider plugin updated on project
+ * 
+ * @author Thomas Cordonnier
+ */
+public class MyCommentsProvider implements ICommentProvider, IProjectEventListener {
+    private String projectName;
+
+    public MyCommentsProvider() {
+        CoreEvents.registerProjectChangeListener(this);
+    }
+
+    public void onProjectChanged(PROJECT_CHANGE_TYPE eventType) {
+        switch (eventType) {
+            case CREATE: case LOAD:
+                try {
+                    ProjectProperties config = Core.getProject().getProjectProperties();
+                    projectName = config.getProjectRoot();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                Core.getComments().addCommentProvider(this, 100);
+                break;
+            case CLOSE:
+                // set to null
+                projectName = null;
+                Core.getComments().removeCommentProvider(this);
+        }
+    }
+
+    /**
+     * Search comment for entry, display it if found
+     */
+    public String getComment(SourceTextEntry newEntry) {
+        if (projectName == null) return null;
+        return "Inside " + projectName + " source " + newEntry.getSrcText();
+    }
+}

@@ -1,0 +1,46 @@
+<project name="My Comments Provider plugin" default="dist">
+    <property name="version" value="0.1" />
+
+	<property name="javac.source" value="1.8" />
+    <property name="javac.target" value="1.8" />
+	
+    <target name="clean">
+        <delete dir="build" />
+        <delete dir="dist" />
+        <delete dir="lib" />
+        <delete dir="stub/classes" />
+    </target>
+
+	<target name="stub" depends="clean">
+        <mkdir dir="stub/classes" />
+        <javac destdir="stub/classes" source="${javac.source}" target="${javac.target}" includeantruntime="false" debug="true">
+            <src path="stub/src" />            
+        </javac>
+		<jar jarfile="lib/OmegaT.jar" basedir="stub/classes" />
+    </target>
+	
+	
+    <target name="build" depends="clean,stub">
+        <mkdir dir="build/classes" />
+        <javac destdir="build/classes" source="${javac.source}" target="${javac.target}" debug="true">
+            <src path="src" />
+            <classpath>
+                <pathelement path="lib/OmegaT.jar" />
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="jar" depends="build">
+        <jar jarfile="build/MyCommentsProvider.jar" basedir="build/classes" manifest="MANIFEST.MF" />
+    </target>
+
+    <target name="dist" depends="jar">
+        <mkdir dir="dist" />
+        <zip destfile="dist/MyCommentsProvider_${version}-bin.zip">
+            <fileset dir="build" includes="*.jar" />
+        </zip>
+        <zip destfile="dist/MyCommentsProvider_${version}-src.zip">
+            <fileset dir="." excludes="build/**, dist/**, .settings/**, classes/**, lib/**" />
+        </zip>
+    </target>
+</project>

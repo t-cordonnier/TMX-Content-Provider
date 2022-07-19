@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OmegaT-Plugin: true
+
+Name: org.omegat.gui.comments.MyCommentsProvider
+OmegaT-Plugin: base
+
