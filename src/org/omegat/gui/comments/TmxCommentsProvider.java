@@ -25,21 +25,40 @@
 
 package org.omegat.gui.comments;
 
+import java.io.File;
+import java.util.Set;
+import java.util.HashSet;
+
 import org.omegat.core.data.SourceTextEntry;
+import org.omegat.core.data.TMXEntry;
+import org.omegat.core.data.ProjectTMX;
+import org.omegat.core.data.EntryKey;
 import org.omegat.core.data.ProjectProperties;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.Core;
 
 /**
- * Prototype ICommentProvider plugin updated on project
+ * This provider displays notes from /extra-notes.tmx into comments pane
  * 
  * @author Thomas Cordonnier
  */
-public class MyCommentsProvider implements ICommentProvider, IProjectEventListener {
-    private String projectName;
+public class TmxCommentsProvider implements ICommentProvider, IProjectEventListener {
+    ProjectTMX notesTmx = null;
 
-    public MyCommentsProvider() {
+    private Set<String> existSource = new HashSet<>();
+    private Set<EntryKey> existKeys = new HashSet<>();
+    ProjectTMX.CheckOrphanedCallback checkOrphanedCallback = new ProjectTMX.CheckOrphanedCallback() {
+        public boolean existSourceInProject(String src) {
+            return existSource.contains(src);
+        }
+
+        public boolean existEntryInProject(EntryKey key) {
+            return existKeys.contains(key);
+        }
+    };
+
+    public TmxCommentsProvider() {
         CoreEvents.registerProjectChangeListener(this);
     }
 
@@ -48,7 +67,9 @@ public class MyCommentsProvider implements ICommentProvider, IProjectEventListen
             case CREATE: case LOAD:
                 try {
                     ProjectProperties config = Core.getProject().getProjectProperties();
-                    projectName = config.getProjectRoot();
+                    File file = new File(config.getProjectRoot() + "/extra-notes.tmx");
+                    notesTmx = new ProjectTMX(config.getSourceLanguage(), config.getTargetLanguage(),
+                        config.isSentenceSegmentingEnabled(), file, checkOrphanedCallback);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -56,7 +77,7 @@ public class MyCommentsProvider implements ICommentProvider, IProjectEventListen
                 break;
             case CLOSE:
                 // set to null
-                projectName = null;
+                notesTmx = null;
                 Core.getComments().removeCommentProvider(this);
         }
     }
@@ -65,7 +86,10 @@ public class MyCommentsProvider implements ICommentProvider, IProjectEventListen
      * Search comment for entry, display it if found
      */
     public String getComment(SourceTextEntry newEntry) {
-        if (projectName == null) return null;
-        return "Inside " + projectName + " source " + newEntry.getSrcText();
+        if (notesTmx == null) return null;
+        TMXEntry te = notesTmx.getMultipleTranslation(newEntry.getKey());
+        if (te == null) te = notesTmx.getDefaultTranslation(newEntry.getSrcText());
+        if (te != null) return "T&A note: " + te.translation;
+        return null;
     }
 }

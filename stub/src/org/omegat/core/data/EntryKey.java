@@ -18,47 +18,29 @@
  **************************************************************************/
 package org.omegat.core.data;
 
-import java.io.File;
-import org.omegat.util.Language;
 
-
-public class ProjectProperties {
-
-
-    /**
-     * Constructor for tests only.
-     */
-    protected ProjectProperties() {
-    }
-
-    /** Default constructor to initialize fields (to get no NPEs). */
-    public ProjectProperties(File projectDir) throws Exception {
-
-    }
-
+public class EntryKey  {
+    public final String file;
+    public final String sourceText;
+    public final String id;
+    public final String prev;
+    public final String next;
+    public final String path;
 
     /**
-     * Returns The Source Language (language of the source files) of the Project
+     * When true, ignore the {@link #file} member when comparing EntryKeys.
      */
-    public Language getSourceLanguage() {
-        return null;
+    private static boolean ignoreFileContext = false;
+
+    public EntryKey(final String file, final String sourceText, final String id, final String prev,
+            final String next, final String path) {
+        this.file = file;
+        this.sourceText = sourceText;
+        this.id = id;
+        this.prev = prev;
+        this.next = next;
+        this.path = path;
     }
 
-    /**
-     * Returns The Target Language (language of the translated files) of the Project
-     */
-    public Language getTargetLanguage() {
-        return null;
-    }
 
-    /**
-     * Returns whether The Sentence Segmenting is Enabled for this Project. Default, Yes.
-     */
-    public boolean isSentenceSegmentingEnabled() {
-        return true;
-    }
-
-    public String getProjectRoot() {
-        return null;
-    }
 }

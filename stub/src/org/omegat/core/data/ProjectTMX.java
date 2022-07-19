@@ -19,46 +19,36 @@
 package org.omegat.core.data;
 
 import java.io.File;
+
 import org.omegat.util.Language;
 
 
-public class ProjectProperties {
+public class ProjectTMX {
 
 
-    /**
-     * Constructor for tests only.
-     */
-    protected ProjectProperties() {
-    }
-
-    /** Default constructor to initialize fields (to get no NPEs). */
-    public ProjectProperties(File projectDir) throws Exception {
+    public ProjectTMX(Language sourceLanguage, Language targetLanguage, boolean isSentenceSegmentingEnabled,
+            File file, CheckOrphanedCallback callback) throws Exception {
 
     }
 
-
     /**
-     * Returns The Source Language (language of the source files) of the Project
+     * Get default translation or null if not exist.
      */
-    public Language getSourceLanguage() {
+    public TMXEntry getDefaultTranslation(String source) {
         return null;
     }
 
     /**
-     * Returns The Target Language (language of the translated files) of the Project
+     * Get multiple translation or null if not exist.
      */
-    public Language getTargetLanguage() {
+    public TMXEntry getMultipleTranslation(EntryKey ek) {
         return null;
     }
 
-    /**
-     * Returns whether The Sentence Segmenting is Enabled for this Project. Default, Yes.
-     */
-    public boolean isSentenceSegmentingEnabled() {
-        return true;
+    public interface CheckOrphanedCallback {
+        boolean existEntryInProject(EntryKey key);
+
+        boolean existSourceInProject(String src);
     }
 
-    public String getProjectRoot() {
-        return null;
-    }
 }
