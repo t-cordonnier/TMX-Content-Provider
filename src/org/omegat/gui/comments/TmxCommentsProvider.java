@@ -37,6 +37,7 @@ import org.omegat.core.data.ProjectProperties;
 import org.omegat.core.events.IProjectEventListener;
 import org.omegat.core.CoreEvents;
 import org.omegat.core.Core;
+import org.omegat.util.Log;
 
 /**
  * This provider displays notes from /extra-notes.tmx into comments pane
@@ -68,8 +69,13 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
                 try {
                     ProjectProperties config = Core.getProject().getProjectProperties();
                     File file = new File(config.getProjectRoot() + "/extra-notes.tmx");
-                    notesTmx = new ProjectTMX(config.getSourceLanguage(), config.getTargetLanguage(),
-                        config.isSentenceSegmentingEnabled(), file, checkOrphanedCallback);
+                    if (file.exists()) {
+                        notesTmx = new ProjectTMX(config.getSourceLanguage(), config.getTargetLanguage(),
+                            config.isSentenceSegmentingEnabled(), file, checkOrphanedCallback);
+                        Log.log("Extra notes : loaded /extra-notes.tmx");
+                    } else {
+                        Log.log("Extra notes : /extra-notes.tmx not found for this project");
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
