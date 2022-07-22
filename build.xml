@@ -38,6 +38,7 @@
         <mkdir dir="dist" />
         <zip destfile="dist/TmxCommentsProvider_${version}-bin.zip">
             <fileset dir="build" includes="*.jar" />
+            <fileset dir="." includes="README.md,LICENSE" />
         </zip>
         <zip destfile="dist/TmxCommentsProvider_${version}-src.zip">
             <fileset dir="." excludes="build/**, dist/**, .settings/**, classes/**, lib/**" />
