@@ -68,18 +68,23 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
             case CREATE: case LOAD:
                 try {
                     ProjectProperties config = Core.getProject().getProjectProperties();
-                    File file = new File(config.getProjectRoot() + "/extra-notes.tmx");
+                    File file = new File(config.getProjectRoot() + "/notes");
                     if (file.exists()) {
-                        notesTmx = new ProjectTMX(config.getSourceLanguage(), config.getTargetLanguage(),
-                            config.isSentenceSegmentingEnabled(), file, checkOrphanedCallback);
-                        Log.log("Extra notes : loaded /extra-notes.tmx");
+                        File[] list = file.listFiles(file0 -> file0.getName().toLowerCase().endsWith(".tmx"));
+                        if (list.length == 0)
+                            Log.log("Extra notes : /notes directory exists but contains no file");
+                        else {
+                            notesTmx = new ProjectTMX(config.getSourceLanguage(), config.getTargetLanguage(),
+                                config.isSentenceSegmentingEnabled(), list[0], checkOrphanedCallback);
+                            Log.log("Extra notes : loaded /notes/" + list[0]);
+                            Core.getComments().addCommentProvider(this, 100);
+                        }
                     } else {
-                        Log.log("Extra notes : /extra-notes.tmx not found for this project");
+                        Log.log("Extra notes : /notes directory not found for this project");
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                Core.getComments().addCommentProvider(this, 100);
                 break;
             case CLOSE:
                 // set to null

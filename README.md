@@ -1,6 +1,7 @@
 This plugin is a comments provider which adds in Comments pane notes extracted from a TMX file.
 
-The file must be named extra-notes.tmx and be put in the root of your project.
+The file must be in directory /notes from the project, have extension .tmx and be in TMX format.
+If there are more than one file in the directory, only one will be kept (no rule is implemented to decide which one).
 It is supposed to be the project_save.tmx file of another OmegaT project:
 other files will load correctly but notes will be displayed only
 if the source corresponds, character per character
