@@ -23,5 +23,5 @@ package org.omegat.util;
 
 
 public class Language  {
-
+    public Language(String st) {}
 }
