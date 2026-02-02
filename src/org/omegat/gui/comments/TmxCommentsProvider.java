@@ -39,6 +39,7 @@ import org.omegat.core.CoreEvents;
 import org.omegat.core.Core;
 import org.omegat.util.Log;
 import org.omegat.util.Language;
+import org.omegat.util.Preferences;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -144,7 +145,7 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-            return "T&A note: " + te.translation;
+            return Preferences.getPreferenceDefault("tmx_content_provider_id", "T&A note: ") + te.translation;
         }
         return null;
     }
