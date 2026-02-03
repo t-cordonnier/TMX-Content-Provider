@@ -55,6 +55,7 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
     ProjectProperties config = null;
     File tmxFile = null;
     Language srcLang, traLang;
+    String prefix = Preferences.getPreferenceDefault("tmx_content_provider_id", "T&A note: ");
 
     private Set<String> existSource = new HashSet<>();
     private Set<EntryKey> existKeys = new HashSet<>();
@@ -84,7 +85,7 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
                             Log.log("Extra notes : /notes directory exists but contains no file");
                         else {
                             srcLang = config.getSourceLanguage(); traLang = config.getTargetLanguage();
-                            loadTmxFile(tmxFile = list[0]);
+                            try { loadTmxFile(tmxFile = list[0]); } catch (Exception ex) { ex.printStackTrace(); }
                             Core.getComments().addCommentProvider(this, 100);
                         }
                     } else {
@@ -104,6 +105,27 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
     private void loadTmxFile(File tmxFile) throws Exception {
         notesTmx = new ProjectTMX(srcLang, traLang,
             Core.getProject().getProjectProperties().isSentenceSegmentingEnabled(), tmxFile, checkOrphanedCallback);
+        XMLStreamReader reader = factory.createXMLStreamReader(new java.io.FileInputStream(tmxFile));
+        boolean inHeader = false, inPrefix = false; StringBuffer pfxBuf = new StringBuffer();
+        while (reader.hasNext())
+            switch (reader.next()) {
+                case XMLStreamReader.START_ELEMENT:
+                    if (reader.getLocalName().equals("header")) inHeader = true;
+                    else if (inHeader && reader.getLocalName().equals("prop")) {
+                        if ("Note-Plugin-Prefix".equals(reader.getAttributeValue(null, "type"))) inPrefix = true;
+                    }
+                    break;
+                case XMLStreamReader.END_ELEMENT:
+                    if (reader.getLocalName().equals("prop")) inPrefix = false;
+                    if (reader.getLocalName().equals("header")) {
+                        if (pfxBuf.length() > 0) this.prefix = pfxBuf.toString();
+                        inHeader = false; return;
+                    }
+                    break;
+                case XMLStreamReader.CHARACTERS:
+                    if (inPrefix) pfxBuf.append(reader.getText());
+                    break;
+            }
     }
 
     private final XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -145,7 +167,7 @@ public class TmxCommentsProvider implements ICommentProvider, IProjectEventListe
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-            return Preferences.getPreferenceDefault("tmx_content_provider_id", "T&A note: ") + te.translation;
+            return prefix + te.translation;
         }
         return null;
     }
