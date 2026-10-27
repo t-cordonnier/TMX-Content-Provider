@@ -1,5 +1,7 @@
 Manifest-Version: 1.0
 OmegaT-Plugin: true
+Plugin-Name: TMX Contents Provider
+Plugin-Description: Adds notes from TMX file
 Plugin-Author: Thomas CORDONNIER
 Plugin-Version: 1.3
 Plugin-Link: https://github.com/t-cordonnier/TMX-Content-Provider.git
