@@ -1,5 +1,8 @@
 Manifest-Version: 1.0
 OmegaT-Plugin: true
+Plugin-Author: Thomas CORDONNIER
+Plugin-Version: 1.3
+Plugin-Link: https://github.com/t-cordonnier/TMX-Content-Provider.git
 
 Name: org.omegat.gui.comments.TmxCommentsProvider
 OmegaT-Plugin: base
