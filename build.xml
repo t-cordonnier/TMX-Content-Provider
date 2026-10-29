@@ -31,7 +31,7 @@
     </target>
 
     <target name="jar" depends="build">
-        <jar jarfile="build/TmxCommentsProvider.jar" basedir="build/classes" manifest="MANIFEST.MF" />
+        <jar jarfile="build/TmxCommentsProvider-${version}.jar" basedir="build/classes" manifest="MANIFEST.MF" />
     </target>
 
     <target name="dist" depends="jar">
